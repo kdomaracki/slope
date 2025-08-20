@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Slope and Intercept Visualizer</title>
+  <style>
+    body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; margin-top: 40px; }
+    .controls { margin-bottom: 20px; }
+    label { margin-right: 8px; }
+    input { width: 60px; margin-right: 16px; }
+    canvas { border: 1px solid #333; background: #fafafa; }
+  </style>
+</head>
+<body>
+  <h1>Slope & Intercept Visualizer</h1>
+  <div class="controls">
+    <label for="slope">Slope (m):</label>
+    <input type="number" id="slope" value="1" step="any">
+    <label for="intercept">Intercept (b):</label>
+    <input type="number" id="intercept" value="0" step="any">
+    <button id="plotBtn">Plot Line</button>
+  </div>
+  <canvas id="plot" width="400" height="400"></canvas>
+  <script>
+    const canvas = document.getElementById('plot');
+    const ctx = canvas.getContext('2d');
+    const slopeInput = document.getElementById('slope');
+    const interceptInput = document.getElementById('intercept');
+    const plotBtn = document.getElementById('plotBtn');
+
+    function drawLine(m, b) {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      // Draw axes
+      ctx.strokeStyle = '#aaa';
+      ctx.beginPath();
+      ctx.moveTo(0, canvas.height/2);
+      ctx.lineTo(canvas.width, canvas.height/2);
+      ctx.moveTo(canvas.width/2, 0);
+      ctx.lineTo(canvas.width/2, canvas.height);
+      ctx.stroke();
+      // Plot line: y = mx + b
+      ctx.strokeStyle = '#0074D9';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      // Map x from -10 to 10
+      let x1 = -10, x2 = 10;
+      let y1 = m * x1 + b;
+      let y2 = m * x2 + b;
+      // Convert to canvas coordinates
+      function toCanvas(x, y) {
+        // x: -10..10 => 0..400
+        // y: -10..10 => 400..0 (invert y)
+        return [
+          (x + 10) * 20,
+          400 - ((y + 10) * 20)
+        ];
+      }
+      const [cx1, cy1] = toCanvas(x1, y1);
+      const [cx2, cy2] = toCanvas(x2, y2);
+      ctx.moveTo(cx1, cy1);
+      ctx.lineTo(cx2, cy2);
+      ctx.stroke();
+    }
+
+    plotBtn.addEventListener('click', () => {
+      const m = parseFloat(slopeInput.value);
+      const b = parseFloat(interceptInput.value);
+      drawLine(m, b);
+    });
+
+    // Initial plot
+    drawLine(1, 0);
+  </script>
+</body>
+</html>
